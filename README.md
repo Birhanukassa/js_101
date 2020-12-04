@@ -1,2 +1,2 @@
 # README #
-This is by no means is not my first GitHub Repository!
+This is by no means is my first GitHub Repository!
