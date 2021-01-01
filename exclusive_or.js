@@ -1,13 +1,16 @@
+function xor(value1, value2) {
+    if ((value1 && !value2) || (value2 && !value1)) {
+      return true;
+    }
+    return false;
+  }
 
-// const xor = function (param1, param2) {
-//     if(param1 )
-//     return param1 || param2;
-// }
-//const xor = (param1, param2) => param2 || param1;
+function xor(value1, value2) {
+  return !!((value1 && !value2) || (value2 && !value1));
+}
 
-const xor = (param1, param2) => !! param1 || param2;       
-
-
+//My Solution 
+const xor = (param1, param2) => !! (param1 || param2);       
 
 
 
