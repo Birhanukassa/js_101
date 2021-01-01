@@ -5,9 +5,8 @@
 // }
 //const xor = (param1, param2) => param2 || param1;
 
-const xor = function (param1, param2) {
-    return !!((param1 && !param2) || (!param1 && param2));       
-}
+const xor = (param1, param2) => !! param1 || param2;       
+
 
 
 
