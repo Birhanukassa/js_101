@@ -13,7 +13,7 @@ const positions = {
   spock: ['scissors', 'rock'],
   lizard: ['spock', 'paper'],
 
-  displayer() {
+  displayMoveChoices() {
     let keys = Object.keys(this).slice(0, 5);
     let formattedMatches = [];
     keys.forEach(Element => {
@@ -78,7 +78,7 @@ function spellChecker(choice) {
 
   while (!KEY.includes(choice)) {
     prompt("That's not a valid choice");
-    choice = readline.question();
+    choice = readline.question().toLowerCase();
   }
   return (choice);
 }
@@ -110,13 +110,12 @@ function isGameOn() {
 }
 
 do {
-  positions.displayer();
+  positions.displayMoveChoices();
   let choice = spellChecker();
   choice = matchingLetter(choice);
   let computerChoice = computerChoiceGenerator();
   displayCurrentScore(choice, computerChoice);
   displayFinalResults();
-  isGameOn();
-} while (answer[0] === 'y');
+} while ((isGameOn() === 'y');
 
 
