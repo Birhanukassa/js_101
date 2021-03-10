@@ -116,6 +116,6 @@ do {
   let computerChoice = computerChoiceGenerator();
   displayCurrentScore(choice, computerChoice);
   displayFinalResults();
-} while ((isGameOn() === 'y');
+} while ((isGameOn() !== 'y'));
 
 
