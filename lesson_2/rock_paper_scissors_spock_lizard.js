@@ -2,7 +2,6 @@ const readline = require('readline-sync');
 const WINNING_SCORE = 5;
 let ComputerScore = 0;
 let userScore = 0;
-let answer = '';
 
 let prompt = message => console.log(`=> ${message}`);
 
@@ -101,12 +100,13 @@ function displayFinalResults() {
 
 function isGameOn() {
   prompt('Do you want to play again (y/n)?');
-  answer = readline.question().toLowerCase();
+  let answer = readline.question().toLowerCase();
 
   while (answer[0] !== 'n' && answer[0] !== 'y') {
     prompt('Please enter "y" or "n".');
     answer = readline.question().toLowerCase();
   }
+  return answer === 'y';
 }
 
 do {
@@ -116,6 +116,6 @@ do {
   let computerChoice = computerChoiceGenerator();
   displayCurrentScore(choice, computerChoice);
   displayFinalResults();
-} while ((isGameOn() !== 'y'));
+} while (isGameOn());
 
 
