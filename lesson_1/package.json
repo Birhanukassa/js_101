@@ -1,0 +1,15 @@
+{
+  "name": "js_101",
+  "version": "1.0.0",
+  "description": "This is by no means is my first GitHub Repository!",
+  "main": "SmallProblemsEasy1IsntitOdd.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "readline-sync": "^1.4.10"
+  }
+}
