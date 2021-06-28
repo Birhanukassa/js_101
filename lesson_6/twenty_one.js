@@ -1,7 +1,7 @@
 const readline = require("readline-sync");
 const PLAYER_WINNING_GOAL = 21;
 const DEALER_WINNING_GOAL = 17;
-const gameScore = {player: 0, dealer: 0};
+const gameScore = { player: 0, dealer: 0 };
 const WINNING_SCORE = 5;
 
 function prompt(print = ' ') {
@@ -18,8 +18,8 @@ function shuffle(array) {
 
 function initializeDeck() {
   const deck = [];
-  const suits = ['Heart','Diamond','Club','Spade'];
-  const cards = ['Ace','2','3','4','5','6','7','8','9','10','Jack','Queen','King'];
+  const suits = ['Heart', 'Diamond', 'Club', 'Spade'];
+  const cards = ['Ace', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'Jack', 'Queen', 'King'];
 
   for (let suit in suits) {
     for (let card in cards) {
@@ -32,10 +32,10 @@ function initializeDeck() {
   return deck;
 }
 
-const displayWelcomeTo21 = function () {
+const displayWelcomeTo21 = function() {
   console.clear();
   console.log();
-  console.log("               ___ Welcome To Twenty One ___" );
+  console.log("               ___ Welcome To Twenty One ___");
   console.log();
 };
 
@@ -60,7 +60,7 @@ function validatingStayOrHit() {
 }
 
 function sumOfCards(currentPlayer) {
-  let suits = ['J','Q','K'];
+  let suits = ['J', 'Q', 'K'];
   let totalCardValue = 0;
 
   currentPlayer.forEach(card => {
@@ -164,7 +164,7 @@ function hideDealerCard(dealer) {
 function isGameOne() {
   prompt('Play again? (yes or no)');
   let response = readline.prompt().toLocaleLowerCase();
-  let choices = ['y','n','yes','no'];
+  let choices = ['y', 'n', 'yes', 'no'];
 
   while (!choices.includes(response)) {
     prompt("Please type the valid choice");
@@ -174,8 +174,8 @@ function isGameOne() {
 }
 
 function isWinner(playerValue, dealerValue) {
-  if (isBusted(playerValue)) return  "Dealer Wins! You are BUSTED!";
-  if (isBusted(dealerValue)) return  "You Win! Dealer BUSTED!";
+  if (isBusted(playerValue)) return "Dealer Wins! You are BUSTED!";
+  if (isBusted(dealerValue)) return "You Win! Dealer BUSTED!";
 
   if ((playerValue === PLAYER_WINNING_GOAL) || (playerValue > dealerValue)) {
     return "You are a Winner!";
@@ -247,4 +247,5 @@ do {
     dealerValue = dealerTurn(deck, DEALER, dealerValue);
   }
   displayFinalResults(PLAYER, playerValue, DEALER, dealerValue);
-}  while (isGameOne());
+} while (isGameOne());
+
