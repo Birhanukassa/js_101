@@ -175,7 +175,7 @@ function isGameOne() {
 
 function isWinner(playerValue, dealerValue) {
   if (isBusted(playerValue)) return "Dealer Wins! You are BUSTED!";
-  if (isBusted(dealerValue)) return "You Win! Dealer BUSTED!";
+  if (isBusted(dealerValue)) return "  You Win! Dealer BUSTED!   ";
 
   if ((playerValue === PLAYER_WINNING_GOAL) || (playerValue > dealerValue)) {
     return "You are a Winner!";
@@ -190,7 +190,7 @@ function isWinner(playerValue, dealerValue) {
 
 function isGrandWinner() {
   if (gameScore.dealer === WINNING_SCORE) {
-    console.log("                   ealer is a GRAND WINNER!");
+    console.log("                   You are a GRAND WINNER!");
     console.log("                  <<<<<<<<<<<<<>>>>>>>>>>>>>>");
     gameScore.dealer = 0;
     gameScore.player = 0;
@@ -220,7 +220,7 @@ function displayFinalResults(player, playerValue, dealer, dealerValue) {
     isGrandWinner();
   } else {
     console.log(`                   ${finalResult}`);
-    console.log("               ****************************");
+    console.log("             ***************************************");
   }
 }
 
@@ -248,4 +248,5 @@ do {
   }
   displayFinalResults(PLAYER, playerValue, DEALER, dealerValue);
 } while (isGameOne());
+
 
