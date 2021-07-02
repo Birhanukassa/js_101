@@ -30,7 +30,7 @@ function initializeDeck() {
         point += 1;
       }
 
-      deck.push({suit: Suit, value: value, points: point});
+      deck.push({ suit: Suit, value: value, points: point });
     }
   }
 
@@ -51,7 +51,7 @@ function shuffle(array) {
 }
 
 function sumOfCards(currentPlayer) {
-  return currentPlayer.reduce((card, {points}) => card + points, 0);
+  return currentPlayer.reduce((card, { points }) => card + points, 0);
 }
 
 function hitCard(deck, currentPlayer) {
@@ -93,7 +93,7 @@ function validatingStayOrHit() {
 }
 
 function objectToString(cards) {
-  let  copyOfCards = [...cards];
+  let copyOfCards = [...cards];
 
   copyOfCards = copyOfCards.map(card => {
     return [card.suit, card.value].join(' ');
@@ -145,7 +145,7 @@ function dealerTurn(deck, dealer) {
 function playerTurn(deck, player, value) {
   while (true) {
     let input = validatingStayOrHit();
-    if (input === 'h' ) {
+    if (input === 'h') {
       prompt("                   You choose to Hit!");
       console.log("");
       player = hitCard(deck, player);
@@ -165,8 +165,8 @@ function playerTurn(deck, player, value) {
 }
 
 function isWinner(playerValue, dealerValue) {
-  if (isBusted(playerValue)) return  "Dealer Wins! ✅  You are BUSTED ❌";
-  if (isBusted(dealerValue)) return  "You Win! ✅  Dealer BUSTED ❌";
+  if (isBusted(playerValue)) return "Dealer Wins! ✅  You are BUSTED ❌";
+  if (isBusted(dealerValue)) return "You Win! ✅  Dealer BUSTED ❌";
 
   if ((playerValue === PLAYER_WINNING_GOAL) || (playerValue > dealerValue)) {
     return "You are a Winner! ✅";
@@ -236,7 +236,7 @@ function isGameOne() {
   console.log("");
 
   let response = readline.prompt().toLocaleLowerCase();
-  const choices = ['y','n','yes','no'];
+  const choices = ['y', 'n', 'yes', 'no'];
 
   while (true) {
     if (!choices.includes(response)) {
@@ -282,4 +282,5 @@ do {
   }
 
   displayFinalResults(PLAYER, playerValue, DEALER, dealerValue);
-}  while (isGameOne());
+} while (isGameOne());
+
