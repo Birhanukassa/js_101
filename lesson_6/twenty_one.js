@@ -1,38 +1,36 @@
 const readline = require("readline-sync");
 const PLAYER_WINNING_GOAL = 21;
 const DEALER_WINNING_GOAL = 17;
+const GRAND_SCORE = 5;
 let gameScore = { player: 0, dealer: 0 };
-const WINNING_SCORE = 5;
 
-const prompt = print  => console.log("🢥 ", print);
+const prompt = print  => console.log("=> ", print);
 
-const goodByeMessage = () => prompt("Thank you for visiting. Goodbye. 🙌");
+const displayGameOver = () => prompt(`                   Game Over!                             
+                       Thank you for visiting; Goodbye. 👋`);
 
 function initializeDeck() {
   let deck = [];
   const SUITS = ['♥', '♦', '♣', '♠'];
   const CARDS = ['Ace', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Jack', 'Queen', 'King'];
   const HAS_TEN_POINTS = ['Jack', 'Queen', 'King'];
-
   for (let suit = 0; suit < SUITS.length; suit++) {
     for (let card = 0; card < CARDS.length; card++) {
-      let currentCard = CARDS[card];
-      let currentSuit = SUITS[suit];
       let point = card % 10;
-      if (HAS_TEN_POINTS.includes(currentCard)) {
+      if (HAS_TEN_POINTS.includes(CARDS[card])) {
         point = 10;
       } else {
         point++;
       }
-      deck.push({ suits: currentSuit, value: currentCard, points: point });
+
+      deck.push({ suits: SUITS[suit], value: CARDS[card], points: point });
     }
   }
-
-  return deck;
+  return shuffle(deck);
 }
 
 function isBusted(currentPayerValue) {
-  return currentPayerValue > PLAYER_WINNING_GOAL;
+  return currentPayerValue > 21;
 }
 
 function shuffle(array) {
@@ -45,12 +43,18 @@ function shuffle(array) {
 }
 
 function sumOfCards(currentPlayer) {
-  return currentPlayer.reduce((card, { points }) => card + points, 0);
+  let totalPoint = 0;
+  currentPlayer.forEach(card => {
+    totalPoint += card.points;
+    if ((card.value === 'Ace') && (totalPoint < 21)) totalPoint += 10; // Here Ace becomes 11 only if total point not busted
+    if ((card.value === 'Ace') && (totalPoint > 21)) totalPoint -= 10; // Here Ace becomes 1 only if total point busted
+  });
+
+  return totalPoint;
 }
 
 function hitCard(deck, currentPlayer) {
-  let [newCard] = shuffle([...deck]);
-  currentPlayer.push(newCard);
+  currentPlayer.push(deck.shift());
   return currentPlayer;
 }
 
@@ -60,31 +64,8 @@ function hideDealerCard(dealer) {
   return coveredCard;
 }
 
-function displayGivenCards(player, dealer, value) {
-  console.log("");
-  player = objectToString(player);
-  dealer = hideDealerCard(objectToString(dealer));
-
-  prompt(`You have:          ${joinAnd(player)} total of ${value} points`);
-  prompt(`Dealer has:        ${joinAnd(dealer)}`);
-  console.log("");
-}
-
 function dealingCards(deck) {
-  let [firstCard, secondCard] = shuffle(deck);
-  return [firstCard, secondCard];
-}
-
-function hitOrStayValidator() {
-  prompt("Type 'h' if you want to hit or 's' if you you wish to stay.");
-  const hitOrStay = ['h', 'hit', 's', 'stay'];
-  let input = readline.question().toLowerCase();
-  while (!hitOrStay.includes(input)) {
-    prompt("Please type the correct word.");
-    input = readline.question().toLowerCase();
-  }
-
-  return input;
+  return [deck.shift(), deck.shift()];
 }
 
 function objectToString(cards) {
@@ -108,54 +89,33 @@ function joinAnd(cards, joinWith = ' and ') {
     case 2:
       return cards.join(joinWith);
     default:
-      return `${copyOfCards.join(',  ')}${joinWith + isLastCard}`;
+      return `${copyOfCards.join(', ')}${joinWith + isLastCard}`;
   }
-}
-
-function playerTurn(deck, player, playerValue) {
-  while (true) {
-    let input = hitOrStayValidator();
-    if (input === 'h') {
-      prompt("                   You choose to Hit!");
-      console.log("");
-      player = hitCard(deck, player);
-      playerValue = sumOfCards(player);
-      prompt(`Your current Cards are:   ${joinAnd(objectToString(player))}.`);
-      prompt(`Your current points are:   ${playerValue} points.`);
-    }
-
-    if (input === 's' || playerValue >= PLAYER_WINNING_GOAL) {
-      if (input === 's') prompt("                   You choose to stay!");
-      console.log("");
-      break;
-    }
-  }
-
-  return playerValue;
 }
 
 function isWinner(playerValue, dealerValue) {
-  if (isBusted(playerValue)) return "Dealer Wins! ✅  You are BUSTED ❌";
-  if (isBusted(dealerValue)) return "You Win! ✅  Dealer BUSTED ❌";
-
-  if ((playerValue === PLAYER_WINNING_GOAL) || (playerValue > dealerValue)) {
-    return "You are a Winner! ✅";
-  } else if (
-    (dealerValue === DEALER_WINNING_GOAL) || (dealerValue > playerValue)
-  ) {
-    return "Dealer is a Winner! ✅";
-  } else {
-    return "The Game is a Tie!";
+  let winner;
+  if (isBusted(playerValue)) {
+    winner = "Dealer Wins! ✅ You are BUSTED ❌";
+  } else if (isBusted(dealerValue)) {
+    winner = "You Win! ✅ Dealer BUSTED ❌";
+  } else if (playerValue > dealerValue) {
+    winner = "You Win! ✅";
+  } else if (dealerValue > playerValue) {
+    winner = "Dealer Wins! ✅";
+  } else if (dealerValue === playerValue) {
+    winner = "It's a Tie! ❌";
   }
+  return winner;
 }
 
 function isGrandWinner() {
-  if (gameScore.dealer === WINNING_SCORE) {
-    console.log("                      Dealer is a GRAND WINNER! 🏆");
-    console.log("                      <<<<<<<<<<<<<>>>>>>>>>>>>>>");
-  } else if (gameScore.player === WINNING_SCORE) {
-    console.log("                      You are a GRAND WINNER! 🏆");
-    console.log("                     <<<<<<<<<<<<<>>>>>>>>>>>>>>");
+  if (gameScore.dealer === GRAND_SCORE) {
+    prompt(`                   Dealer is a GRAND WINNER! 🏆
+                      <<<<<<<<<<<<<>>>>>>>>>>>>>>`);
+  } else if (gameScore.player === GRAND_SCORE) {
+    prompt(`                   You are a GRAND WINNER! 🏆
+                      <<<<<<<<<<<<<>>>>>>>>>>>>>>`);
   }
   resetScores();
 }
@@ -166,55 +126,80 @@ function displayFinalResults(player, playerValue, dealer, dealerValue) {
 
   let finalResult = isWinner(playerValue, dealerValue);
   scoreCache(finalResult);
-
   console.log("");
   prompt(`                   Dealer score ${gameScore.dealer} times.`);
-  prompt(`                   You score ${gameScore.player} times.`);
-  console.log("");
+  prompt(`                   You score ${gameScore.player} times.
+  
+  `);
+
   if ((
-    gameScore.dealer === WINNING_SCORE) || (gameScore.player === WINNING_SCORE
+    gameScore.dealer === GRAND_SCORE) || (gameScore.player === GRAND_SCORE
   )) {
     isGrandWinner();
-  } else {
-    console.log(`                      ${finalResult}`);
-    console.log("                      ************************");
     console.log("");
+  } else {
+    prompt(`                   ${finalResult}`);
+    console.log(`                       *********************************
+   `);
   }
 }
 
-const instructions = () => console.log(` 
+const instructions = () => {
+  console.log(`                       ☝  Rules of the Game Play!   
+                       --------------------------- 
+
     To play the game, you will be given two cards. 
     The goal of the game is to get as close to 21 points possible without going over.
-    If you hit 21 points, you win! If you or Dealer go over 21 points, it's a loss.
-    If the Dealer gets to 17 points, the Dealer wins. 
+    If you hit ${PLAYER_WINNING_GOAL} points, you win! 
+    If the Dealer gets to ${DEALER_WINNING_GOAL} points, the Dealer wins. 
+    If you or Dealer go over 21 points, it's a loss.
     If you get to precisely the same points, it's a tie.
+    If any of you win ${GRAND_SCORE} times in arrow, you will be a grand winner!
 
     Good luck! 🎉
-              
-              `);
-
-const displayWelcomeTo21 = () => {
-  console.clear();
-  console.log(`                  ___ Welcome To Twenty One ___ 
-                  =============================
- 
-                   ☝  Rules of the Game Play!   
-                  -----------------------------              
+             
   `);
+
 };
 
-function isGameOne() {
-  console.log("               To start a new game, press 'y' or 'n'");
-  let response = readline.prompt().toLocaleLowerCase();
-  const choices = ['y', 'n', 'yes', 'no'];
+const displayWelcomeMessage = () => {
+  console.log(`
+                      ___ Welcome To Twenty One ___ 
+                      =============================
+  `);
+  instructions();
+};
 
+const playAgain = () => {
+  console.clear();
+  // if its a new game, prompt for instructions
+  if (gameScore.dealer === 0 && gameScore.player === 0) {
+    displayWelcomeMessage();
+    prompt(`                   Starting a new game!
+   
+    `);
+  } else {
+    prompt(`                   Let's continue the Game!
+    `);
+  }
+};
+
+function isGameOn() {
+  prompt("                   to continue the round, press 'y' or 'n'");
+  let input = readline.question().toLocaleLowerCase();
+  const choices = ['y', 'n', 'yes', 'no'];
   while (true) {
-    if (!choices.includes(response)) {
-      prompt("                  Please type the valid choice");
-      response = readline.prompt().toLocaleLowerCase();
+    if (!choices.includes(input)) {
+      prompt("                   Please type the valid choice");
+      input = readline.question().toLocaleLowerCase();
     }
-    if (response[0] === 'n') goodByeMessage();
-    return response[0] === 'y';
+
+    if (input[0] === 'y') {
+      return true;
+    } else if (input[0] === 'n') {
+      displayGameOver();
+      return false;
+    }
   }
 }
 
@@ -227,52 +212,91 @@ function resetScores() {
   gameScore = { player: 0, dealer: 0 };
 }
 
-function dealerTurn(deck, dealer, dealerValue) {
-  while (dealerValue <= DEALER_WINNING_GOAL) {
-    prompt("                   Dealer Hits!");
-    console.log("");
-    dealerValue  = sumOfCards(hitCard(deck, dealer));
+function hitOrStayValidator() {
+  prompt("Type 'h' if you want to hit or 's' if you wish to stay.");
+  let input = readline.question().toLowerCase();
+  const hitOrStay = ['h', 'hit', 's', 'stay'];
 
-    prompt(`Now Dealer's cards becomes:   ${joinAnd(objectToString(dealer))}`);
-    prompt(`Dealer current becomes:   ${dealerValue} points.`);
-
-    if (dealerValue >= DEALER_WINNING_GOAL) {
-      console.log("");
-      prompt("                   Dealer choose to stay!");
-      console.log("");
-      break;
-    }
-
+  while (!hitOrStay.includes(input)) {
+    prompt("Please type the correct word.");
+    input = readline.question().toLowerCase();
   }
 
-  return dealerValue;
+  return input;
+}
+
+function displayGivenCards(player, dealer, value) {
+  dealer = hideDealerCard(objectToString(dealer));
+  prompt(`You have:          ${joinAnd(objectToString(player))} total of ${value} points`);
+  prompt(`Dealer has:        ${joinAnd(dealer)} Cards`);
+  console.log("");
+}
+
+function playerTurn(deck, player,value) {
+  while (value <= PLAYER_WINNING_GOAL) {
+    let input = hitOrStayValidator();
+    if (input === 'h') {
+      player = hitCard(deck, player);
+      prompt(`                   You choose to Hit!
+      `);
+      value = sumOfCards(player);
+      prompt(`Your current Cards are:  ${joinAnd(objectToString(player))}`);
+      prompt(`Your current points are: ${value} points`);
+      console.log("");
+    } else if (input === 's' || value >= PLAYER_WINNING_GOAL) {
+      prompt(`                   You choose to stay!`);
+      break;
+    }
+  }
+
+  return value;
+}
+
+function dealerTurn(deck, dealer, value) {
+  while (value <= DEALER_WINNING_GOAL) {
+    console.log("");
+    prompt(`                   Dealer choose to Hit!
+    `);
+    value  = sumOfCards(hitCard(deck, dealer));
+    prompt(`Dealer's cards become:  ${joinAnd(objectToString(dealer))}`);
+    prompt(`Dealer points become:   ${value}`);
+
+    if (value > DEALER_WINNING_GOAL) {
+      console.log("");
+      console.log(`                       Dealer chooses to stay!
+      `);
+      break;
+    }
+  }
+
+  return value;
 }
 
 do {
-  displayWelcomeTo21();
-  instructions();
-  if (!isGameOne()) break;
-  let dealer = [];
-  let player = [];
+  playAgain();
+  let dealerCards = [];
+  let playerCards = [];
+
   let deck = initializeDeck();
-  prompt("                   Let's start the Game!");
-  player = dealingCards(deck, player);
-  dealer = dealingCards(deck, dealer);
+  playerCards = dealingCards(deck);
+  dealerCards = dealingCards(deck);
 
-  let playerValue = sumOfCards(player);
-  let dealerValue = sumOfCards(dealer);
+  let playerValue = sumOfCards(playerCards);
+  let dealerValue = sumOfCards(dealerCards);
 
-  displayGivenCards(player, dealer, playerValue);
+  displayGivenCards(playerCards, dealerCards, playerValue);
 
-  console.log("                 .... Your turn ....");
-  playerValue = playerTurn(deck, player, playerValue);
+  prompt(`                   Your turn ....
+  `);
+  playerValue = playerTurn(deck, playerCards, playerValue);
 
-  if (playerValue < PLAYER_WINNING_GOAL) {
-    console.log("                 .... Dealer turn ....");
-    dealerValue = dealerTurn(deck, dealer, dealerValue);
+  if (playerValue <= PLAYER_WINNING_GOAL) {
+    prompt(`                   Dealer turn ....
+    `);
+    dealerValue = dealerTurn(deck, dealerCards, dealerValue);
   }
 
-  displayFinalResults(player, playerValue, dealer, dealerValue);
-} while (isGameOne());
+  displayFinalResults(playerCards, playerValue, dealerCards, dealerValue);
+} while (isGameOn());
 
 
