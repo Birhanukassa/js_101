@@ -164,6 +164,7 @@ const instructions = () => {
 
 const displayWelcomeMessage = () => {
   console.log(`
+  
                       ___ Welcome To Twenty One ___ 
                       =============================
   `);
@@ -171,15 +172,28 @@ const displayWelcomeMessage = () => {
 };
 
 const playAgain = () => {
-  console.clear();
   // if its a new game, prompt for instructions
   if (gameScore.dealer === 0 && gameScore.player === 0) {
     displayWelcomeMessage();
     prompt(`                   Starting a new game!
+    
    
     `);
+    console.log("                       To start a new game, press 'y' or 'n'");
+    let response = readline.prompt().toLocaleLowerCase();
+    const choices = ['y', 'n', 'yes', 'no'];
+  
+    while (true) {
+      if (!choices.includes(response)) {
+        prompt("                  Please type the valid choice");
+        response = readline.prompt().toLocaleLowerCase();
+      }
+      if (response[0] === 'n') displayGameOver();
+      return response[0] === 'y';
+    }
   } else {
-    prompt(`                   Let's continue the Game!
+    console.clear();
+    prompt(`                     Let's continue the Game!
     `);
   }
 };
@@ -298,5 +312,7 @@ do {
 
   displayFinalResults(playerCards, playerValue, dealerCards, dealerValue);
 } while (isGameOn());
+
+
 
 
